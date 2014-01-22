@@ -1,19 +1,15 @@
-import lxc
+import libvirt
 
-class ContainerManager:
-    def __init__(self, names, default_template = 'ubuntu'):
+class DomainManager:
+    def __init__(self, names):
         self.names = names
-        self.default_template = default_template
-        self.containers = {}
 
-    def create(self):
-        for container_name in self.names:
-            try:
-                container = lxc.Container(container_name)
-            except Exception, e:
-                raise e
-            
-            self.containers[container_name] = container
+    def connect(self, URI = None):
+        try
+            self.conn = libvirt.open(URI)
+        except libvirt.libvirtError:
+            print "Failed to open connection to hyphervisor"
+        
 
     def create(self, name):
         self.containers[name].create(self.default_template)

@@ -1,22 +1,49 @@
 import sys
-import unittest
+import libvirt
 
-from fabstick.container_manager import ContainerManager
+from unittest import TestCase
 
-containers = ['keystone','nova','ceilometer','swift']
+from fabstick.domain_manager import DomainManager
 
-class SimpleContainerTestCase(unittest.TestCase):
+domains = ['keystone','nova','ceilometer','swift']
+
+class SimpleDomainTestCase(TestCase):
     def setUp(self):
-        self.cntr_mgr = ContainerManager(containers)
+        self.domains = domains
+        self.domain_manager = DomainManager(self.domains)
+        self.conn = self.domain_manager.connect()
 
     def tearDown(self):
-        self.cntr_mgr.stop(self.name)
+        if(self.conn.isAlive()):
+            self.domain_manager.close()
 
-class ContainerManagerTestCase(SimpleContainerTestCase):
-    def test_container_attr(self):
-        self.assertEqual(self.cntr_mgr.name,'keystone')
-        self.assertEqual(self.cntr_mgr.template,'Ubuntu')
+class DomainManagerTestCase(SimpleDomainTestCase):
+    def test_isalive(self):
+        self.assertEqual(self.conn.isAlive(),True)
+        self.domain_manager.close()
 
-    def test_start_container(self):
-        self.cntr_mgr.start(self.name)
-        self.cntr_mgr.is_active(self.name)
+    def test_start_domain(self):
+        with self.assertRaises(libvirt.libvirtError):
+            for domain_name in self.domains:
+                domain = self.conn.lookupByName(domain_name)
+
+
+    def test_stop_domain(self):
+        pass
+
+    def test_domain_attr(self):
+        pass
+
+    def test_add_device(self):
+        pass
+
+    def test_del_device(self):
+        pass
+
+    def test_set_network(self):
+        pass
+
+    def test_clear_network(self):
+        pass
+
+    
